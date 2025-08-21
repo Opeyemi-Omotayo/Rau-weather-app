@@ -2,7 +2,7 @@ import { DailyProps } from '@/contexts/appState';
 
 const parseTime = (t: string) => {
   const [time, modifier] = t.split(' ');
-  let [hours, minutes] = time.split(':').map(Number);
+  const [hours, minutes] = time.split(':').map(Number);
 
   // Destructure properly to make minutes const
   let hoursVar = hours;
