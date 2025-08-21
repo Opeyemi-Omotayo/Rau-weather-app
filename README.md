@@ -1,6 +1,6 @@
 # Weather App
 
-The Weather App is a modern, responsive, and performance-focused web application that provides real-time and forecast weather data. It is designed to be intuitive, fast, and customizable, leveraging cutting-edge frontend technologies such as React 19, TypeScript, Tailwind CSS, and Vite.
+This Weather App is a modern, responsive, and performance-focused web application that provides real-time and forecast weather data. It is designed to be intuitive, fast, and customizable, leveraging cutting-edge frontend technologies such as React 19, TypeScript, Tailwind CSS, and Vite.
 
 The app integrates with a Open Meteo weather API to display location-based forecasts, hourly breakdowns, and additional insights in a visually appealing UI built with Shadcn components.
 
@@ -9,8 +9,6 @@ The app integrates with a Open Meteo weather API to display location-based forec
 - [Features](#features)
 - [Setup Instructions](#setup-instructions)
 - [Architecture Overview](#architecture-overview)
-- [Customization Guide](#customization-guide)
-- [Best Practices](#best-practices)
 - [Contributing](#contributing)
 
 ## Features
