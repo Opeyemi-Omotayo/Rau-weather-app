@@ -1,6 +1,7 @@
 import { createContext, useState, useCallback } from 'react';
 import axios from 'axios';
 import { getWeatherDescription } from '@/components/custom/WeatherDetails/helper';
+import { apiUrl } from '@/config/env';
 
 const DEFAULT_COORDS = { latitude: 52.52437, longitude: 13.41053 }; // Berlin
 const POLL_INTERVAL = 2 * 60 * 1000; // 2 minutes
@@ -88,7 +89,7 @@ export const AppStateProvider = ({ children }: { children: React.ReactNode }) =>
       forecast_days: '2',
       timezone: 'auto',
     });
-    return `${import.meta.env.VITE_APP_OPEN_METEO_API_URL}/forecast?${params.toString()}`;
+    return `${apiUrl}/forecast?${params.toString()}`;
   };
 
   const formatTime12h = (iso: string) =>
@@ -143,20 +144,22 @@ export const AppStateProvider = ({ children }: { children: React.ReactNode }) =>
       });
 
       const now = new Date();
-      const idx = merged.findIndex((p: any) => p.date >= now);
+      const idx = merged.findIndex((p) => p.date >= now);
       const startIdx = idx === -1 ? Math.max(0, merged.length - 8) : idx;
 
       const slice = merged
         .slice(startIdx, startIdx + 8)
-        .map((p: any, i: number) => ({ ...p, idx: i }));
+        .map((p, i: number) => ({ ...p, idx: i }));
 
       if (slice[0]) slice[0].time = 'Now';
 
       setForecast(slice);
-    } catch (err: any) {
-      if (!axios.isCancel(err)) {
-        setError(err?.message || 'Something went wrong');
-      }
+    } catch (err: unknown) {
+      if (axios.isAxiosError(err)) {
+    setError(err.message); // safe access
+  } else {
+    setError('Something went wrong');
+  }
     } finally {
       setLoading(false);
     }

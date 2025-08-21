@@ -4,10 +4,14 @@ const parseTime = (t: string) => {
   const [time, modifier] = t.split(' ');
   let [hours, minutes] = time.split(':').map(Number);
 
-  if (modifier === 'PM' && hours < 12) hours += 12;
-  if (modifier === 'AM' && hours === 12) hours = 0;
+  // Destructure properly to make minutes const
+  let hoursVar = hours;
+  const minutesVar = minutes;
 
-  return { hours, minutes };
+  if (modifier === 'PM' && hoursVar < 12) hoursVar += 12;
+  if (modifier === 'AM' && hoursVar === 12) hoursVar = 0;
+
+  return { hours: hoursVar, minutes: minutesVar };
 };
 
 export const isNight = (dt: string | Date, daily: DailyProps) => {

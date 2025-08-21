@@ -18,9 +18,8 @@
     "skipLibCheck": true, // Optional: improves build time by skipping type checks for declaration files
     "baseUrl": ".",
     "paths": {
-      "@/*": [
-        "./src/*"
-      ]
-    }
-  },
+      "@/*": ["./src/*"]
+    },
+    "types": ["jest", "@testing-library/jest-dom", "vite/client"]
+  }
 }

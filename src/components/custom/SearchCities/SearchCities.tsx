@@ -2,6 +2,7 @@ import { useState, useCallback } from 'react';
 import axios from 'axios';
 import { Input } from '@/components/ui/input';
 import { useAppState } from '@/hooks/useAppState';
+import { geocodingApiUrl } from '@/config/env';
 
 interface Place {
   name: string;
@@ -20,13 +21,14 @@ const SearchCities = () => {
       return;
     }
     try {
-      const url = `${import.meta.env.VITE_APP_OPEN_METEO_GEOCODING_API_URL}/search?name=${encodeURIComponent(
+      const url = `${geocodingApiUrl}/search?name=${encodeURIComponent(
         value
       )}&country=DE&count=5`;
       const res = await axios.get(url);
       setSuggestions(res.data.results || []);
-    } catch (e) {
+    } catch (e: unknown) {
       setSuggestions([]);
+      throw e;
     }
   }, []);
 
@@ -45,7 +47,7 @@ const SearchCities = () => {
 
   return (
     <div className='relative w-full'>
-      <Input placeholder='Berlin, DE' value={query} onChange={handleChange} className='w-full' />
+      <Input placeholder='Berlin, Germany' value={query} onChange={handleChange} className='w-full' />
 
       {suggestions.length > 0 && (
         <ul className='absolute left-0 right-0 mt-1 bg-white border border-gray-300 text-gray-600 text-xs rounded-md shadow-lg z-10 max-h-48 overflow-y-auto'>

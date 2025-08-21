@@ -1,8 +1,9 @@
 import { ResponsiveContainer, AreaChart, Area, YAxis, XAxis, ReferenceLine } from 'recharts';
 import { isNight } from './helper';
 import { useAppState } from '@/hooks/useAppState';
+import { ForecastItem } from '@/contexts/appState';
 
-export default function ForecastChart({ data }: { data: any }) {
+export default function ForecastChart({ data }: { data: ForecastItem[] }) {
   const { daily } = useAppState();
   const iconForCode = (code: number, night: boolean) => {
     if ([0, 1].includes(code)) return night ? '🌙' : '☀️';
@@ -23,13 +24,13 @@ export default function ForecastChart({ data }: { data: any }) {
     sm:grid-cols-8 sm:grid-flow-row sm:auto-cols-auto sm:overflow-visible
   '
       >
-        {data.map((pt: any) => (
-          <div key={pt.idx} className='flex flex-col items-center'>
+        {data.map((item) => (
+          <div key={item.idx} className='flex flex-col items-center'>
             <span className='text-base leading-none'>
-              {iconForCode(pt.weathercode, isNight(pt.date, daily))}
+              {iconForCode(item.weathercode, isNight(item.date, daily))}
             </span>
-            <span className='text-[11px] text-gray-500 mt-1'>{pt.time}</span>
-            <span className='text-sm text-gray-900 mt-1'>{Math.round(pt.temperature)}°</span>
+            <span className='text-[11px] text-gray-500 mt-1'>{item.time}</span>
+            <span className='text-sm text-gray-900 mt-1'>{Math.round(item.temperature)}°</span>
           </div>
         ))}
       </div>
@@ -39,8 +40,8 @@ export default function ForecastChart({ data }: { data: any }) {
           <AreaChart data={data} margin={{ top: 4, right: 6, bottom: 0, left: 6 }}>
             <XAxis dataKey='idx' hide />
             <YAxis domain={[0, 100]} hide />
-            {data.map((pt: any) => (
-              <ReferenceLine key={`v-${pt.idx}`} x={pt.idx} stroke='#E5E7EB' strokeDasharray='0' />
+            {data.map((item) => (
+              <ReferenceLine key={`v-${item.idx}`} x={item.idx} stroke='#E5E7EB' strokeDasharray='0' />
             ))}
             <Area
               type='monotone'
@@ -62,9 +63,9 @@ export default function ForecastChart({ data }: { data: any }) {
     sm:grid-cols-8 sm:grid-flow-row sm:auto-cols-auto sm:overflow-visible
   '
       >
-        {data.map((pt: any) => (
-          <div key={`b-${pt.idx}`} className='text-center text-[11px] text-gray-500'>
-            {Math.round(pt.precipProb)}%
+        {data.map((item) => (
+          <div key={`b-${item.idx}`} className='text-center text-[11px] text-gray-500'>
+            {Math.round(item.precipProb)}%
           </div>
         ))}
       </div>
