@@ -3,7 +3,7 @@ import axios from 'axios';
 import { getWeatherDescription } from '@/components/custom/WeatherDetails/helper';
 
 const DEFAULT_COORDS = { latitude: 52.52437, longitude: 13.41053 }; // Berlin
-const POLL_INTERVAL = 30 * 60 * 1000; // 30 minutes
+const POLL_INTERVAL = 2 * 60 * 1000; // 2 minutes
 
 type Coords = { latitude: number; longitude: number };
 type OpenMeteoResponse = {
