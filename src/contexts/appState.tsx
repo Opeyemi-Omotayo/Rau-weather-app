@@ -122,7 +122,7 @@ export const AppStateProvider = ({ children }: { children: React.ReactNode }) =>
         uv_index: uv = [],
         wind_speed_10m: wind = [],
       } = hourly ?? {};
-      
+
       setDaily({
         sunrise: daily?.sunrise?.[0] ? formatTime12h(daily.sunrise[0]) : '',
         sunset: daily?.sunset?.[0] ? formatTime12h(daily.sunset[0]) : '',
@@ -144,22 +144,20 @@ export const AppStateProvider = ({ children }: { children: React.ReactNode }) =>
       });
 
       const now = new Date();
-      const idx = merged.findIndex((p) => p.date >= now);
+      const idx = merged.findIndex(p => p.date >= now);
       const startIdx = idx === -1 ? Math.max(0, merged.length - 8) : idx;
 
-      const slice = merged
-        .slice(startIdx, startIdx + 8)
-        .map((p, i: number) => ({ ...p, idx: i }));
+      const slice = merged.slice(startIdx, startIdx + 8).map((p, i: number) => ({ ...p, idx: i }));
 
       if (slice[0]) slice[0].time = 'Now';
 
       setForecast(slice);
     } catch (err: unknown) {
       if (axios.isAxiosError(err)) {
-    setError(err.message); // safe access
-  } else {
-    setError('Something went wrong');
-  }
+        setError(err.message); 
+      } else {
+        setError('Something went wrong');
+      }
     } finally {
       setLoading(false);
     }
