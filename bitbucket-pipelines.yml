@@ -1,0 +1,13 @@
+pipelines:
+  default:
+    - step:
+        name: Install, Test, Lint and Build
+        caches:
+          - node
+        script:
+          - npm install           # Install dependencies
+          - npm run test           # Run tests first
+          - npm run lint           # Run ESLint to check for linting issues
+          - npm run build          # Build the project last
+        artifacts:
+          - build/**/*            # Save build artifacts (optional, useful for deployment)

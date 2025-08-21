@@ -1,0 +1,26 @@
+{
+  "files": [],
+  "references": [
+    {
+      "path": "./tsconfig.app.json"
+    },
+    {
+      "path": "./tsconfig.node.json"
+    }
+  ],
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "Node",
+    "jsx": "react-jsx", // <-- This is required to enable JSX syntax in TypeScript
+    "esModuleInterop": true, // <-- Enable this for better module interoperability
+    "strict": true, // Recommended to enable strict type-checking
+    "skipLibCheck": true, // Optional: improves build time by skipping type checks for declaration files
+    "baseUrl": ".",
+    "paths": {
+      "@/*": [
+        "./src/*"
+      ]
+    }
+  },
+}
