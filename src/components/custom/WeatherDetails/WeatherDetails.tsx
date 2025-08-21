@@ -6,6 +6,10 @@ import {
   CarouselPrevious,
 } from '@/components/ui/carousel';
 import sunny from '@/assets/imgs/sunny.webp';
+import cloudy from '@/assets/imgs/cloudy.png';
+import rainy from '@/assets/imgs/rainy.png';
+import snowy from '@/assets/imgs/snowy.png';
+import night from '@/assets/imgs/nighty.webp';
 import { useAppState } from '@/hooks/useAppState';
 import SearchCities from '../SearchCities/SearchCities';
 import {
@@ -33,6 +37,15 @@ const getWeatherIcon = (description: string, isNight: boolean) => {
     return isNight ? <CloudMoon className='w-4 h-4' /> : <CloudSnow className='w-4 h-4' />;
 
   return <Sun className='w-4 h-4' />;
+};
+
+const getWeatherImage = (code: number, isNight: boolean) => {
+  if ([0, 1].includes(code)) return isNight ? night : sunny;
+  if ([2, 3].includes(code)) return cloudy;
+  if ([51, 53, 55, 61, 63, 65, 80, 81, 82].includes(code)) return rainy;
+  if ([71, 73, 75, 77, 85, 86].includes(code)) return snowy;
+
+  return sunny;
 };
 
 const WeatherDetails = () => {
@@ -82,7 +95,11 @@ const WeatherDetails = () => {
         </Carousel>
       </div>
 
-      <img src={sunny} alt='sunny' className='w-[70%] mx-auto flex self-end' />
+      <img
+        src={getWeatherImage(weather[0]?.code, isNight(weather[0]?.date, daily))}
+        alt='weather illustration'
+        className='w-[70%] mx-auto flex self-end'
+      />
     </div>
   );
 };

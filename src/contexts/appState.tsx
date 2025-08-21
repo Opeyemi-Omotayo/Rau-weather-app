@@ -42,6 +42,7 @@ export type WeatherProps = {
   temp: number;
   description: string;
   date: Date;
+  code: number;
 };
 
 export type DailyProps = {
@@ -166,6 +167,7 @@ export const AppStateProvider = ({ children }: { children: React.ReactNode }) =>
       temp: item.temperature,
       description: getWeatherDescription(item.weathercode),
       date: item.date,
+      code: item.weathercode,
     })) || [];
 
   return (
