@@ -27,7 +27,7 @@ const Home = () => {
 
   return (
     <main className='flex justify-center items-center bg-blue-200 py-[5%] xl:py-0 h-full xl:h-[100vh] text-white'>
-      <div className='flex flex-col lg:flex-row justify-between w-[95%] xl:w-[85%] max-2xl:w-[80%] bg-blue-400 h-[90%] xl:h-[85%] max-2xl:h-[80%] rounded-[45px]'>
+      <div className='flex flex-col lg:flex-row justify-between w-[95%] xl:w-[85%] bg-blue-400 h-[90%] xl:h-[85%] max-2xl:h-[80%] rounded-[45px]'>
         <div className='p-6 xl:p-8 w-full lg:w-[25%] '>
           <WeatherDetails />
         </div>
