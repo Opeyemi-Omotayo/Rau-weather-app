@@ -22,7 +22,8 @@ import {
   CloudSnow,
   CloudMoon,
 } from 'lucide-react';
-import { hourFromISO, isNight } from '../ForecastChart/helper';
+import { isNight } from '../ForecastChart/helper';
+import { formatTime12h } from './helper';
 
 const getWeatherIcon = (description: string, isNight: boolean) => {
   const desc = description.toLowerCase();
@@ -63,14 +64,14 @@ const WeatherDetails = () => {
             </div>
             <div className='flex items-center text-sm'>
               <Sunrise className='w-4 h-4' />
-              <h1 className=' pl-1'> {hourFromISO(daily?.sunrise)}</h1>
+              <h1 className=' pl-1'> {formatTime12h(daily?.sunrise)}</h1>
             </div>
           </div>
           <div className='flex items-center justify-between'>
             <p className='text-xs'>{new Date().toDateString()}</p>
             <div className='flex items-center text-sm'>
               <Sunset className='w-4 h-4' />
-              <h1 className=' pl-1'> {hourFromISO(daily?.sunset)}</h1>
+              <h1 className=' pl-1'> {formatTime12h(daily?.sunset)}</h1>
             </div>
           </div>
         </section>
@@ -83,7 +84,7 @@ const WeatherDetails = () => {
                   <div className='flex items-center gap-1 -ml-6'>
                     {getWeatherIcon(item.description, isNight(item.date, daily))}
                     <p className='text-xs'>
-                      {isNight(item.date, daily) ? 'Night' : item.description},  {new Date(item.date).getHours()}
+                      {isNight(item.date, daily) ? 'Night' : item.description}, {formatTime12h(item.date)}
                     </p>
                   </div>
                 </div>

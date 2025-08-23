@@ -15,7 +15,7 @@ export const getWeatherDescription = (code: number): string => {
   return 'Unknown';
 };
 
-export const formatTime12h = (iso: string) =>
+export const formatTime12h = (iso: string | Date) =>
   new Date(iso).toLocaleTimeString([], {
     hour: 'numeric',
     minute: '2-digit',
