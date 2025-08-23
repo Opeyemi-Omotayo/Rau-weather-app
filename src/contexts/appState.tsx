@@ -4,7 +4,7 @@ import { getWeatherDescription } from '@/components/custom/WeatherDetails/helper
 import { apiUrl } from '@/config/env';
 
 const DEFAULT_COORDS = { latitude: 52.52437, longitude: 13.41053 }; // Berlin
-const POLL_INTERVAL = 2 * 60 * 1000; // 2 minutes
+const POLL_INTERVAL = 1 * 60 * 1000; // 2 minutes
 
 type Coords = { latitude: number; longitude: number };
 type OpenMeteoResponse = {
@@ -14,6 +14,7 @@ type OpenMeteoResponse = {
     temperature_2m?: number[];
     apparent_temperature?: number[];
     precipitation_probability?: number[];
+    precipitation?: number[];
     weathercode?: number[];
     relative_humidity_2m?: number[];
     uv_index?: number[];
@@ -32,6 +33,7 @@ export type ForecastItem = {
   temperature: number;
   feelsLike: number;
   precipProb: number;
+  precipitation: number;
   weathercode: number;
   humidity: number;
   uvIndex: number;
@@ -63,6 +65,8 @@ export type AppStateContextType = {
   POLL_INTERVAL: number;
   location: string;
   setLocation: (location: string) => void;
+  coordinates: Coords;
+  setCoordinates: (coords: Coords) => void;
   fetchForecast: (coords?: Coords, signal?: AbortSignal) => Promise<void>;
 };
 
@@ -75,6 +79,7 @@ export const AppStateProvider = ({ children }: { children: React.ReactNode }) =>
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [daily, setDaily] = useState<DailyProps>({ sunrise: '', sunset: '' });
+  const [coordinates, setCoordinates] = useState<Coords>(DEFAULT_COORDS);
 
   const getPosition = (): Promise<GeolocationPosition> =>
     new Promise((resolve, reject) => navigator.geolocation.getCurrentPosition(resolve, reject));
@@ -84,7 +89,7 @@ export const AppStateProvider = ({ children }: { children: React.ReactNode }) =>
       latitude: String(lat),
       longitude: String(lon),
       hourly:
-        'temperature_2m,apparent_temperature,precipitation_probability,weathercode,rain,relative_humidity_2m,uv_index,wind_speed_10m',
+        'temperature_2m,apparent_temperature,precipitation_probability,precipitation,weathercode,rain,relative_humidity_2m,uv_index,wind_speed_10m',
       daily: 'sunrise,sunset',
       forecast_days: '2',
       timezone: 'auto',
@@ -99,69 +104,76 @@ export const AppStateProvider = ({ children }: { children: React.ReactNode }) =>
       hour12: true,
     });
 
-  const fetchForecast = useCallback(async (coords?: Coords, signal?: AbortSignal) => {
-    try {
-      setLoading(true);
-      setError(null);
+  const fetchForecast = useCallback(
+    async (coords: Coords = coordinates, signal?: AbortSignal) => {
+      try {
+        setLoading(true);
+        setError(null);
 
-      const { latitude: lat, longitude: lon } = coords ?? DEFAULT_COORDS;
+        const { latitude: lat, longitude: lon } = coords;
 
-      const url = buildForecastUrl(lat, lon);
-      const { data } = await axios.get<OpenMeteoResponse>(url, { signal });
+        const url = buildForecastUrl(lat, lon);
+        const { data } = await axios.get<OpenMeteoResponse>(url, { signal });
 
-      const { hourly, daily } = data;
+        const { hourly, daily } = data;
 
-      const {
-        time: times = [],
-        rain = [],
-        temperature_2m: temps = [],
-        apparent_temperature: feels = [],
-        precipitation_probability: probs = [],
-        weathercode: codes = [],
-        relative_humidity_2m: humidity = [],
-        uv_index: uv = [],
-        wind_speed_10m: wind = [],
-      } = hourly ?? {};
+        const {
+          time: times = [],
+          rain = [],
+          temperature_2m: temps = [],
+          apparent_temperature: feels = [],
+          precipitation_probability: probs = [],
+          precipitation: precip = [],
+          weathercode: codes = [],
+          relative_humidity_2m: humidity = [],
+          uv_index: uv = [],
+          wind_speed_10m: wind = [],
+        } = hourly ?? {};
 
-      setDaily({
-        sunrise: daily?.sunrise?.[0] ? formatTime12h(daily.sunrise[0]) : '',
-        sunset: daily?.sunset?.[0] ? formatTime12h(daily.sunset[0]) : '',
-      });
-      const merged = times.map((iso: string, i: number) => {
-        const date = new Date(iso);
-        return {
-          date,
-          time: formatTime12h(iso),
-          rain: Number(rain[i] ?? 0),
-          temperature: Number(temps[i] ?? 0),
-          feelsLike: Number(feels[i] ?? 0),
-          precipProb: Number(probs[i] ?? 0),
-          weathercode: Number(codes[i] ?? 3),
-          humidity: Number(humidity[i] ?? 0),
-          uvIndex: Number(uv[i] ?? 0),
-          windSpeed: Number(wind[i] ?? 0),
-        };
-      });
+        setDaily({
+          sunrise: daily?.sunrise?.[0] ?? '',
+          sunset: daily?.sunset?.[0] ?? '',
+        });
+        const merged = times.map((iso: string, i: number) => {
+          const date = new Date(iso);
+          return {
+            date,
+            time: formatTime12h(iso),
+            rain: Number(rain[i] ?? 0),
+            temperature: Number(temps[i] ?? 0),
+            feelsLike: Number(feels[i] ?? 0),
+            precipProb: Number(probs[i] ?? 0),
+            precipitation: Number(precip[i] ?? 0),
+            weathercode: Number(codes[i] ?? 3),
+            humidity: Number(humidity[i] ?? 0),
+            uvIndex: Number(uv[i] ?? 0),
+            windSpeed: Number(wind[i] ?? 0),
+          };
+        });
 
-      const now = new Date();
-      const idx = merged.findIndex(p => p.date >= now);
-      const startIdx = idx === -1 ? Math.max(0, merged.length - 8) : idx;
+        const now = new Date();
+        const idx = merged.findIndex(p => p.date >= now);
+        const startIdx = idx === -1 ? Math.max(0, merged.length - 8) : idx;
 
-      const slice = merged.slice(startIdx, startIdx + 8).map((p, i: number) => ({ ...p, idx: i }));
+        const slice = merged
+          .slice(startIdx, startIdx + 8)
+          .map((p, i: number) => ({ ...p, idx: i }));
 
-      if (slice[0]) slice[0].time = 'Now';
+        if (slice[0]) slice[0].time = 'Now';
 
-      setForecast(slice);
-    } catch (err: unknown) {
-      if (axios.isAxiosError(err)) {
-        setError(err.message); 
-      } else {
-        setError('Something went wrong');
+        setForecast(slice);
+      } catch (err: unknown) {
+        if (axios.isAxiosError(err)) {
+          setError(err.message);
+        } else {
+          setError('Something went wrong');
+        }
+      } finally {
+        setLoading(false);
       }
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+    },
+    []
+  );
 
   const weather: WeatherProps[] =
     forecast?.map(item => ({
@@ -185,6 +197,8 @@ export const AppStateProvider = ({ children }: { children: React.ReactNode }) =>
         POLL_INTERVAL,
         location,
         setLocation,
+        coordinates,
+        setCoordinates,
         fetchForecast,
       }}
     >

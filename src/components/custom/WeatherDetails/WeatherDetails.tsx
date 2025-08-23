@@ -23,6 +23,7 @@ import {
   CloudMoon,
 } from 'lucide-react';
 import { isNight } from '../ForecastChart/helper';
+import { formatTime12h } from './helper';
 
 const getWeatherIcon = (description: string, isNight: boolean) => {
   const desc = description.toLowerCase();
@@ -63,14 +64,14 @@ const WeatherDetails = () => {
             </div>
             <div className='flex items-center text-sm'>
               <Sunrise className='w-4 h-4' />
-              <h1 className=' pl-1'> {daily?.sunrise}</h1>
+              <h1 className=' pl-1'> {formatTime12h(daily?.sunrise)}</h1>
             </div>
           </div>
           <div className='flex items-center justify-between'>
             <p className='text-xs'>{new Date().toDateString()}</p>
             <div className='flex items-center text-sm'>
               <Sunset className='w-4 h-4' />
-              <h1 className=' pl-1'> {daily?.sunset}</h1>
+              <h1 className=' pl-1'> {formatTime12h(daily?.sunset)}</h1>
             </div>
           </div>
         </section>

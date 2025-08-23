@@ -12,7 +12,7 @@ interface Place {
 }
 
 const SearchCities = () => {
-  const { query, setQuery, setLocation, fetchForecast } = useAppState();
+  const { query, setQuery, setLocation, fetchForecast, setCoordinates } = useAppState();
   const [suggestions, setSuggestions] = useState<Place[]>([]);
 
   const fetchSuggestions = useCallback(async (value: string) => {
@@ -35,7 +35,8 @@ const SearchCities = () => {
   const handleSelect = (place: Place) => {
     setQuery(`${place.name}, ${place.country}`);
     setSuggestions([]);
-    fetchForecast({ latitude: place.latitude, longitude: place.longitude });
+    setCoordinates({ latitude: place.latitude, longitude: place.longitude });
+    fetchForecast();
     setLocation(`${place.name}, ${place.country}`);
   };
 

@@ -14,3 +14,10 @@ export const getWeatherDescription = (code: number): string => {
   if ([96, 99].includes(code)) return 'Thunderstorm with hail';
   return 'Unknown';
 };
+
+export const formatTime12h = (iso: string) =>
+  new Date(iso).toLocaleTimeString([], {
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true,
+  });

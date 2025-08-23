@@ -10,7 +10,7 @@ const MoreDetails = () => {
   const { forecast } = useAppState();
 
   const currentWeather: ForecastItem = forecast?.[0] ?? ({} as ForecastItem);
-  const { humidity, windSpeed, precipProb, uvIndex, feelsLike, rain } = currentWeather;
+  const { humidity, windSpeed, precipProb, uvIndex, feelsLike, precipitation} = currentWeather;
 
   // segmented bar helper: returns an array of booleans indicating filled segments
   const segments = (value: number, segments = 5) => {
@@ -96,10 +96,10 @@ const MoreDetails = () => {
             </IconWrapper>
           </div>
           <div className='flex items-center justify-center gap-3 mt-2'>
-            <div className='text-2xl font-semibold'>{precipProb} cm</div>
+            <div className='text-2xl font-semibold'>{precipitation} mm</div>
           </div>
 
-          <SegmentedBar value={(precipProb / 5) * 100} segmentsCount={10} />
+          <SegmentedBar value={(precipitation / 5) * 100} segmentsCount={10} />
           <div className='flex justify-between text-[11px] text-gray-400 mt-2'>
             <span>0</span>
             <span>10</span>
@@ -168,10 +168,10 @@ const MoreDetails = () => {
             </IconWrapper>
           </div>
           <div className='flex items-center justify-center gap-3 mt-1'>
-            <div className='text-2xl font-semibold'>{Math.round(rain)}%</div>
+            <div className='text-2xl font-semibold'>{Math.round(precipProb)}%</div>
           </div>
 
-          <SegmentedBar value={rain} segmentsCount={4} small />
+          <SegmentedBar value={precipProb} segmentsCount={4} small />
           <div className='flex justify-between text-[11px] text-gray-400 mt-2'>
             <span>0%</span>
             <span>25%</span>

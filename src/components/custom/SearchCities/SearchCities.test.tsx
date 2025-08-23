@@ -17,6 +17,7 @@ const mockedAxios = axios as jest.Mocked<typeof axios>;
 describe('SearchCities component', () => {
   const setQuery = jest.fn();
   const setLocation = jest.fn();
+  const setCoordinates = jest.fn();
   const fetchForecast = jest.fn();
 
   beforeEach(() => {
@@ -25,6 +26,7 @@ describe('SearchCities component', () => {
       query: '',
       setQuery,
       setLocation,
+      setCoordinates,
       fetchForecast,
     });
   });
@@ -38,8 +40,8 @@ describe('SearchCities component', () => {
     mockedAxios.get.mockResolvedValue({
       data: {
         results: [
-          { name: 'Berlin', country: 'DE', latitude: 52.52, longitude: 13.405 },
-          { name: 'Berchtesgaden', country: 'DE', latitude: 47.63, longitude: 13.0 },
+          { name: 'Berlin', country: 'Germany', latitude: 52.52, longitude: 13.405 },
+          { name: 'Berchtesgaden', country: 'Germany', latitude: 47.63, longitude: 13.0 },
         ],
       },
     });
@@ -49,21 +51,17 @@ describe('SearchCities component', () => {
     fireEvent.change(input, { target: { value: 'Ber' } });
 
     await waitFor(() => {
-      expect(mockedAxios.get).toHaveBeenCalledWith(
-        expect.stringContaining('Ber')
-      );
+      expect(mockedAxios.get).toHaveBeenCalledWith(expect.stringContaining('Ber'));
     });
 
-    expect(await screen.findByText('Berlin, DE')).toBeInTheDocument();
-    expect(await screen.findByText('Berchtesgaden, DE')).toBeInTheDocument();
+    expect(await screen.findByText('Berlin, Germany')).toBeInTheDocument();
+    expect(await screen.findByText('Berchtesgaden, Germany')).toBeInTheDocument();
   });
 
   it('selecting a suggestion updates query, location, and fetchForecast', async () => {
     mockedAxios.get.mockResolvedValue({
       data: {
-        results: [
-          { name: 'Berlin', country: 'DE', latitude: 52.52, longitude: 13.405 },
-        ],
+        results: [{ name: 'Berlin', country: 'Germany', latitude: 52.52, longitude: 13.405 }],
       },
     });
 
@@ -71,13 +69,14 @@ describe('SearchCities component', () => {
     const input = screen.getByPlaceholderText('Berlin, Germany');
     fireEvent.change(input, { target: { value: 'Ber' } });
 
-    const suggestion = await screen.findByText('Berlin, DE');
+    const suggestion = await screen.findByText('Berlin, Germany');
     fireEvent.click(suggestion);
 
-    expect(setQuery).toHaveBeenCalledWith('Berlin, DE');
-    expect(setLocation).toHaveBeenCalledWith('Berlin, DE');
-    expect(fetchForecast).toHaveBeenCalledWith({ latitude: 52.52, longitude: 13.405 });
-    expect(screen.queryByText('Berlin, DE')).not.toBeInTheDocument(); // suggestions cleared
+    expect(setQuery).toHaveBeenCalledWith('Berlin, Germany');
+    expect(setLocation).toHaveBeenCalledWith('Berlin, Germany');
+    expect(setCoordinates).toHaveBeenCalledWith({ latitude: 52.52, longitude: 13.405 });
+    expect(fetchForecast).toHaveBeenCalledTimes(1); 
+    expect(screen.queryByText('Berlin, Germany')).not.toBeInTheDocument(); 
   });
 
   it('clears suggestions if less than 2 characters typed', async () => {

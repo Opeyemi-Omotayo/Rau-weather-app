@@ -6,24 +6,11 @@ import UpcomingHoursForecast from '@/components/custom/UpcomingHoursForecast/Upc
 import { Loader } from '@/components/Shared/Loader/Loader';
 
 const Home = () => {
-  const { fetchForecast, POLL_INTERVAL, loading } = useAppState();
-  const DEFAULT_COORDS = { latitude: 52.52437, longitude: 13.41053 }; // Berlin
+  const { fetchForecast, loading, coordinates } = useAppState();
 
   useEffect(() => {
-    let intervalId: NodeJS.Timeout;
-
-    (async () => {
-      await fetchForecast(DEFAULT_COORDS);
-
-      intervalId = setInterval(async () => {
-        await fetchForecast(DEFAULT_COORDS);
-      }, POLL_INTERVAL);
-    })();
-
-    return () => {
-      if (intervalId) clearInterval(intervalId);
-    };
-  }, [fetchForecast]);
+    fetchForecast(coordinates)
+  }, [fetchForecast, coordinates]);
 
   return (
     <main className='flex justify-center items-center bg-blue-200 py-[5%] xl:py-0 h-full xl:h-[100vh] text-white'>
